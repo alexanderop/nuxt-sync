@@ -1,0 +1,9 @@
+{
+  "name": "nuxt-sync-playground",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "nuxt": "^3.16.0",
+    "nuxt-sync": "workspace:*"
+  }
+}

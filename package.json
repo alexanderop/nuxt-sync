@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Real-time collaborative data for Nuxt — independent CRDTs with Nitro WebSocket sync",
   "type": "module",
+  "packageManager": "pnpm@10.28.2",
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",
@@ -20,7 +21,9 @@
     "dist"
   ],
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "nuxi dev playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare playground",
     "build": "nuxt-module-build build",
     "prepare": "nuxi prepare playground",
     "typecheck": "nuxi typecheck playground",
@@ -29,6 +32,7 @@
     "test:composables": "vitest --project composables",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:all": "vitest && playwright test",
     "test:coverage": "vitest --coverage",
     "lint": "oxlint src/",
     "lint:fix": "oxlint src/ --fix"
@@ -42,6 +46,7 @@
     "@playwright/test": "^1.58.2",
     "@vitest/coverage-v8": "^4.0.18",
     "@vue/test-utils": "^2.4.6",
+    "fast-check": "^4.6.0",
     "jsdom": "^28.1.0",
     "nuxt": "^3.16.0",
     "oxlint": "^1.52.0",

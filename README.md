@@ -9,7 +9,7 @@ Inspired by [Jazz](https://jazz.tools) and [Nuxt Content](https://content.nuxt.c
 ## Install
 
 ```bash
-npm install nuxt-sync
+pnpm add nuxt-sync
 ```
 
 ```ts

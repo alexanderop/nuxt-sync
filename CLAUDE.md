@@ -9,15 +9,16 @@ nuxt-sync is a Nuxt 3 module that provides real-time collaborative data using CR
 ## Commands
 
 ```bash
-npm run dev              # Start playground dev server (nuxi dev playground)
-npm run build            # Build the module (nuxt-module-build build)
-npm run prepare          # Generate playground types (nuxi prepare playground)
-npm run typecheck        # Typecheck via playground (nuxi typecheck playground)
-npm test                 # Run all vitest tests (unit + composables)
-npm run test:unit        # Run unit tests only (core CRDT, schema, id, storage)
-npm run test:composables # Run composable tests only (useSyncMap, useSyncList)
-npm run test:e2e         # Run Playwright E2E tests (playground todo app)
-npm run test:coverage    # Run vitest with V8 coverage
+pnpm dev              # Start playground dev server
+pnpm build            # Build the module
+pnpm dev:prepare      # Stub module + generate playground types
+pnpm prepare          # Generate playground types only
+pnpm typecheck        # Typecheck via playground
+pnpm test             # Run all vitest tests (unit + composables)
+pnpm test:unit        # Run unit tests only (core CRDT, schema, id, storage)
+pnpm test:composables # Run composable tests only (useSyncMap, useSyncList)
+pnpm test:e2e         # Run Playwright E2E tests (playground todo app)
+pnpm test:coverage    # Run vitest with V8 coverage
 ```
 
 ## Architecture

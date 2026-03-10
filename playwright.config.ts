@@ -22,7 +22,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npx nuxi dev playground --port 3333',
+    command: 'pnpm exec nuxi dev playground --port 3333',
     url: 'http://localhost:3333',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
