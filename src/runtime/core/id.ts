@@ -6,7 +6,7 @@ let counter = 0
  */
 export function generateId(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID().replace(/-/g, '').slice(0, 16)
+    return crypto.randomUUID().replaceAll('-', '').slice(0, 16)
   }
   return `${Date.now().toString(36)}${(counter++).toString(36)}${Math.random().toString(36).slice(2, 8)}`
 }

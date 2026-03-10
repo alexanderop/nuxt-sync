@@ -1,6 +1,6 @@
 import { defineWebSocketHandler } from 'h3'
 import type { Peer } from 'crossws'
-import type { Operation, ClientMessage, ServerMessage } from '../../core/types'
+import type { ClientMessage, ServerMessage } from '../../core/types'
 import { createStore, applyOp, type CRDTStore } from '../../core/crdt'
 import { createMemoryStorage, type SyncStorage } from '../utils/storage'
 
@@ -81,7 +81,7 @@ export default defineWebSocketHandler({
         if (!subscriptions.has(msg.docId)) {
           subscriptions.set(msg.docId, new Set())
         }
-        subscriptions.get(msg.docId)!.add(peerId)
+        subscriptions.get(msg.docId)?.add(peerId)
 
         // Send current state as a snapshot (all operations for this doc)
         const ops = await storage.getOperations(msg.docId)

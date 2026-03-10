@@ -31,7 +31,7 @@ export function createMemoryStorage(): SyncStorage {
       if (!ops.has(docId)) {
         ops.set(docId, [])
       }
-      ops.get(docId)!.push(op)
+      ops.get(docId)?.push(op)
     },
 
     async getOperations(docId: string) {
@@ -44,19 +44,30 @@ export function createMemoryStorage(): SyncStorage {
   }
 }
 
+interface SQLiteDb {
+  exec(sql: string): void
+  prepare(sql: string): { run(...params: unknown[]): void; all(...params: unknown[]): unknown[] }
+}
+
 /**
  * SQLite storage using better-sqlite3 (for Node.js runtime).
  * This is the recommended storage for development and production.
  */
 export function createSQLiteStorage(dbPath: string): SyncStorage {
-  let db: any = null
+  let _db: SQLiteDb | null = null
+
+  function getDb(): SQLiteDb {
+    if (!_db) throw new Error('[nuxt-sync] SQLite storage not initialized. Call initialize() first.')
+    return _db
+  }
 
   return {
     async initialize() {
       // Dynamic import to avoid bundling issues
       const Database = (await import('better-sqlite3')).default
-      db = new Database(dbPath)
+      _db = new Database(dbPath) as SQLiteDb
 
+      const db = getDb()
       db.exec(`
         CREATE TABLE IF NOT EXISTS sync_operations (
           id TEXT PRIMARY KEY,
@@ -76,6 +87,7 @@ export function createSQLiteStorage(dbPath: string): SyncStorage {
     },
 
     async saveOperation(op: Operation) {
+      const db = getDb()
       const stmt = db.prepare(`
         INSERT OR IGNORE INTO sync_operations (id, doc_id, type, payload, timestamp, client_id)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -84,6 +96,7 @@ export function createSQLiteStorage(dbPath: string): SyncStorage {
     },
 
     async getOperations(docId: string) {
+      const db = getDb()
       const rows = db.prepare(
         'SELECT payload FROM sync_operations WHERE doc_id = ? ORDER BY timestamp ASC, client_id ASC',
       ).all(docId) as Array<{ payload: string }>
@@ -92,6 +105,7 @@ export function createSQLiteStorage(dbPath: string): SyncStorage {
     },
 
     async getAllDocIds() {
+      const db = getDb()
       const rows = db.prepare(
         'SELECT DISTINCT doc_id FROM sync_operations',
       ).all() as Array<{ doc_id: string }>

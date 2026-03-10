@@ -1,4 +1,4 @@
-import { inject, ref, onUnmounted, type InjectionKey, type Ref } from 'vue'
+import { inject, ref, type InjectionKey, type Ref } from 'vue'
 import type { Operation, ClientMessage, ServerMessage, SyncStatus } from '../core/types'
 import { generateId } from '../core/id'
 
@@ -34,35 +34,35 @@ export class SyncClient {
       return
     }
 
-    this.ws.onopen = () => {
+    this.ws.addEventListener('open', () => {
       this._status.value = 'ready'
       // Flush queued messages
       for (const msg of this.queue) {
-        this.ws!.send(JSON.stringify(msg))
+        this.ws?.send(JSON.stringify(msg))
       }
       this.queue = []
       // Re-subscribe to all active docs
       for (const docId of this.listeners.keys()) {
-        this.ws!.send(JSON.stringify({ type: 'sub', docId }))
+        this.ws?.send(JSON.stringify({ type: 'sub', docId }))
       }
-    }
+    })
 
-    this.ws.onmessage = (event) => {
+    this.ws.addEventListener('message', (event) => {
       try {
         const msg: ServerMessage = JSON.parse(event.data)
         this.handleMessage(msg)
       } catch {
         // Ignore malformed messages
       }
-    }
+    })
 
-    this.ws.onclose = () => {
+    this.ws.addEventListener('close', () => {
       this.scheduleReconnect()
-    }
+    })
 
-    this.ws.onerror = () => {
+    this.ws.addEventListener('error', () => {
       this._status.value = 'error'
-    }
+    })
   }
 
   private scheduleReconnect() {
@@ -113,7 +113,7 @@ export class SyncClient {
     if (!this.listeners.has(docId)) {
       this.listeners.set(docId, new Set())
     }
-    this.listeners.get(docId)!.add(onOp)
+    this.listeners.get(docId)?.add(onOp)
     this.snapshotListeners.set(docId, onSnapshot)
 
     // Send subscribe message

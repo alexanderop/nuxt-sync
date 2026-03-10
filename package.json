@@ -29,7 +29,9 @@
     "test:composables": "vitest --project composables",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "lint": "oxlint src/",
+    "lint:fix": "oxlint src/ --fix"
   },
   "dependencies": {
     "@nuxt/kit": "^3.16.0",
@@ -42,6 +44,7 @@
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^28.1.0",
     "nuxt": "^3.16.0",
+    "oxlint": "^1.52.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
   },

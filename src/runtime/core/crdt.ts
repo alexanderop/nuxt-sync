@@ -3,11 +3,6 @@ import type {
   Register,
   ListItem,
   Operation,
-  MapSetOp,
-  MapDelOp,
-  ListInsertOp,
-  ListDeleteOp,
-  ListItemSetOp,
 } from './types'
 
 // ─── LWW comparison ─────────────────────────────────────────────────
@@ -108,7 +103,7 @@ export class CRDTList {
     return true
   }
 
-  delete(itemId: string, ts: number, clientId: string): boolean {
+  delete(itemId: string, _ts: number, _clientId: string): boolean {
     const item = this.items.get(itemId)
     if (!item || item.deleted) return false
     // For delete, we use LWW — any delete with a later ts wins

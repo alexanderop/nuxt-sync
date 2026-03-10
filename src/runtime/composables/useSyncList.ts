@@ -119,7 +119,7 @@ export function useSyncList<T>(
 
     // Find the last item to insert after
     const currentItems = crdt.toArray()
-    const lastId = currentItems.length > 0 ? currentItems[currentItems.length - 1].id : null
+    const lastId = currentItems.at(-1)?.id ?? null
 
     const op: Operation = {
       type: 'list:ins',
