@@ -36,7 +36,10 @@ export class CRDTMap {
   applyDel(key: string, ts: number, clientId: string): boolean {
     const existing = this.registers.get(key)
     if (lwwWins(ts, clientId, existing)) {
-      this.registers.delete(key)
+      // Use tombstone (value = undefined) to preserve the deletion timestamp.
+      // Without this, a later-arriving set with an older timestamp would
+      // see no existing register and incorrectly win.
+      this.registers.set(key, { value: undefined, ts, clientId })
       return true
     }
     return false
@@ -46,11 +49,11 @@ export class CRDTMap {
     return this.registers.get(key)?.value
   }
 
-  /** Return a plain object with current values */
+  /** Return a plain object with current values (excludes tombstones) */
   toJSON(): Record<string, unknown> {
     const result: Record<string, unknown> = {}
     for (const [key, reg] of this.registers) {
-      result[key] = reg.value
+      if (reg.value !== undefined) result[key] = reg.value
     }
     return result
   }
@@ -103,12 +106,15 @@ export class CRDTList {
     return true
   }
 
-  delete(itemId: string, _ts: number, _clientId: string): boolean {
+  delete(itemId: string, ts: number, clientId: string): boolean {
     const item = this.items.get(itemId)
     if (!item || item.deleted) return false
-    // For delete, we use LWW — any delete with a later ts wins
-    item.deleted = true
-    return true
+    // LWW: only delete if this op is newer than the item's insertion
+    if (ts > item.ts || (ts === item.ts && clientId > item.clientId)) {
+      item.deleted = true
+      return true
+    }
+    return false
   }
 
   setItemField(
@@ -187,7 +193,11 @@ export class CRDTList {
   loadItems(items: ListItem[]): void {
     this.items.clear()
     for (const item of items) {
-      this.items.set(item.id, { ...item, fields: { ...item.fields } })
+      const fields: MapState = {}
+      for (const [key, reg] of Object.entries(item.fields)) {
+        fields[key] = { ...reg }
+      }
+      this.items.set(item.id, { ...item, fields })
     }
   }
 }
